@@ -4,7 +4,7 @@
 '''
     Message Queue Producer
     @author: Bin Zhang
-    @email: zhangbinsjtu@gmail.com
+    @email: sjtuzb@gmail.com
 '''
 
 import datetime

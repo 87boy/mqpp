@@ -4,7 +4,7 @@
 '''
     CKAN API
     @author: Bin Zhang
-    @email: zhangbinsjtu@gmail.com
+    @email: sjtuzb@gmail.com
 '''
 
 import json

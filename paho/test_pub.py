@@ -2,7 +2,7 @@
 # -*- coding=UTF-8 -*-
 
 '''
-    Message Queue Producer
+    Message Queue Publisher
     @author: Bin Zhang
     @email: sjtuzb@gmail.com
 '''
@@ -11,18 +11,28 @@ import datetime
 import json
 import random
 import time
-import pika
+
+import paho.mqtt.client as mqtt
 
 from config import *
 
-credentials = pika.PlainCredentials(broker_username, broker_password)
-parameters = pika.ConnectionParameters(broker_url, broker_port, vhost, credentials)
-connection = pika.BlockingConnection(parameters)
+message = {}
 
-channel = connection.channel()
+# Called when the broker responds to our connection request.
+def on_connect(client, userdata, rc):
+    print("Connected with result code " + str(rc))
+
+client = mqtt.Client()
+client.username_pw_set(broker_username, broker_password)
+
+client.on_connect = on_connect
+
+client.connect(broker_url, broker_port, 60)
+
+client.loop_start()
 
 while True:
-    sense_temperature = str(random.randint(2,10))
+    sense_temperature = str(random.randint(2,20))
     sense_humidity = str(random.randint(30,60))
     sense_datetime = str(datetime.datetime.now().isoformat())
 
@@ -49,6 +59,8 @@ while True:
     }
     message_json = json.dumps(message)
 
-    channel.basic_publish(exchange='exchange', routing_key='routing_key', body=message_json)
+    client.publish("gateway", message_json)
+
     print '[t] temperature = ' + sense_temperature + ', humidity = ' + sense_humidity
-    time.sleep(600)
+
+    time.sleep(30)
