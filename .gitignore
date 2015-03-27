@@ -58,6 +58,10 @@ docs/_build/
 target/
 
 
+##Mac OS X gitignore
+.DS_Store
+
+
 ##config gitignore
 config.*
 *.sql
