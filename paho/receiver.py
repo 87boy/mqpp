@@ -30,6 +30,7 @@ def on_message(client, userdata, msg):
     print '[begin] ' + begin_datetime
     message = json.loads(msg.payload)
     print message
+
     influxdb_url = urllib.quote(influxdb_url)
     influxdb_port = urllib.quote(str(influxdb_port))
     influxdb_dbname = urllib.quote(influxdb_dbname)
