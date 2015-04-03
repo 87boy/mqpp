@@ -28,8 +28,17 @@ def on_message(client, userdata, msg):
 
     begin_datetime = str(datetime.datetime.now().isoformat())
     print '[begin] ' + begin_datetime
+
     message = json.loads(msg.payload)
     print message
+
+    post_data = str(msg.payload)
+
+    global influxdb_url
+    global influxdb_port
+    global influxdb_dbname
+    global influxdb_username
+    global influxdb_password
 
     influxdb_url = urllib.quote(influxdb_url)
     influxdb_port = urllib.quote(str(influxdb_port))
