@@ -64,6 +64,7 @@ target/
 
 ##config gitignore
 config.*
+*.config
 *.sql
 *.json
 
