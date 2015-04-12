@@ -68,3 +68,6 @@ config.*
 *.sql
 *.json
 
+
+# jetBrains gitignore
+.idea/
