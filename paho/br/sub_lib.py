@@ -36,9 +36,6 @@ def on_connect(client, userdata, rc):
 def on_message(client, userdata, msg):
     #print(msg.topic + " " + str(msg.payload))
 
-    begin_datetime = str(datetime.datetime.now().isoformat())
-    print "[begin] " + begin_datetime
-
     message = json.loads(msg.payload)
 
     config = GetConfig()
@@ -82,12 +79,17 @@ def on_message(client, userdata, msg):
 
         post_str = json.dumps(post_list)
 
+        request = urllib2.Request(request_url, post_str)
+        request.add_header("Content-Type", "application/json")
         try:
-            request = urllib2.Request(request_url, post_str)
-            request.add_header("Content-Type", "application/json")
             response = urllib2.urlopen(request, timeout=10)
         except:
-            print "HTTPError!"
+            error_datetime = str(datetime.datetime.now().isoformat())
+            cwd = os.getcwd()
+            log_path = cwd + "/error.log"
+            with open(log_path, "a") as log_file:
+                log_json = {"datetime": error_datetime, "error": "HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str}
+                json.dump(log_json, log_file)
 
         print response.code
 
