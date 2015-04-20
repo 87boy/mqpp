@@ -37,6 +37,8 @@ def on_message(client, userdata, msg):
     #print(msg.topic + " " + str(msg.payload))
 
     message = json.loads(msg.payload)
+    if not isinstance(message, list):
+        return
 
     config = GetConfig()
     influxdb = config.get_influxdb()
@@ -49,6 +51,8 @@ def on_message(client, userdata, msg):
     request_url = "http://%s:%s/db/%s/series?u=%s&p=%s" % (influxdb_url, influxdb_port, influxdb_database, influxdb_username, influxdb_password)
 
     for record in message:
+        if not isinstance(record, dict):
+            continue
         if not record["device"]:
             continue
 
@@ -84,12 +88,18 @@ def on_message(client, userdata, msg):
         try:
             response = urllib2.urlopen(request, timeout=10)
         except:
-            error_datetime = str(datetime.datetime.now().isoformat())
             cwd = os.getcwd()
             log_path = cwd + "/error.log"
+            error_datetime = str(datetime.datetime.now().isoformat())
             with open(log_path, "a") as log_file:
-                log_json = {"datetime": error_datetime, "error": "HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str}
+                log_json = {"datetime": error_datetime, "error": "First HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "response_code": response.code}
                 json.dump(log_json, log_file)
-
-        print response.code
+            try:
+                response = urllib2.urlopen(request, timeout=10)
+            except:
+                error_datetime = str(datetime.datetime.now().isoformat())
+                with open(log_path, "a") as log_file:
+                    log_json = {"datetime": error_datetime, "error": "Second HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "response_code": response.code}
+                    json.dump(log_json, log_file)
+        #print response.code
 
