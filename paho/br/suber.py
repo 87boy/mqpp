@@ -30,7 +30,7 @@ def main():
 
     print "Awaiting..."
 
-    client.loop_forever()
+    client.loop_forever(timeout=600.0, max_packets=100000)
 
 if __name__ == '__main__':
     main()
