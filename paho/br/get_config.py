@@ -23,9 +23,9 @@ class GetConfig(object):
                 self.config_json = json.loads(config_string)
         else:
             config_log_path = cwd + "/config.log"
-            with open(config_log_path, "a") as log_file:
-                log_json = {"datatime": str(datetime.datetime.now().isoformat()), "error": "config file does not exist!"}
-                json.dump(log_json, log_file)
+            with open(config_log_path, "a") as config_log_file:
+                config_log_json = {"datatime": str(datetime.datetime.now().isoformat()), "error": "config file does not exist!"}
+                json.dump(config_log_json, config_log_file)
 
     def get_broker(self):
         return self.config_json["broker"]
