@@ -14,8 +14,11 @@ import urllib2
 
 from get_config import *
 
+
 class SubLib(object):
+
     """docstring for SubLib"""
+
     def __init__(self):
         super(SubLib, self).__init__()
         config = GetConfig()
@@ -23,6 +26,8 @@ class SubLib(object):
         self.topics = config.get_topics()
 
 # Called when the broker responds to our connection request.
+
+
 def on_connect(client, userdata, rc):
     print("Connected with result code " + str(rc))
     config = GetConfig()
@@ -32,7 +37,10 @@ def on_connect(client, userdata, rc):
         topic_list.append((str(topics[key]["topic"]), topics[key]["qos"]))
     client.subscribe(topic_list)
 
-# Called when a message has been received on a topic that the client subscribes to
+# Called when a message has been received on a topic that the client
+# subscribes to
+
+
 def on_message(client, userdata, msg):
     #print(msg.topic + " " + str(msg.payload))
 
@@ -48,7 +56,8 @@ def on_message(client, userdata, msg):
     influxdb_username = urllib.quote(influxdb["databases"]["username"])
     influxdb_password = urllib.quote(influxdb["databases"]["password"])
 
-    request_url = "http://%s:%s/db/%s/series?u=%s&p=%s" % (influxdb_url, influxdb_port, influxdb_database, influxdb_username, influxdb_password)
+    request_url = "http://%s:%s/db/%s/series?u=%s&p=%s" % (
+        influxdb_url, influxdb_port, influxdb_database, influxdb_username, influxdb_password)
 
     for record in message:
         if not isinstance(record, dict):
@@ -85,21 +94,27 @@ def on_message(client, userdata, msg):
 
         request = urllib2.Request(request_url, post_str)
         request.add_header("Content-Type", "application/json")
+        cwd = os.getcwd()
+        log_path = cwd + "/error.log"
         try:
             response = urllib2.urlopen(request, timeout=10)
-        except:
-            cwd = os.getcwd()
-            log_path = cwd + "/error.log"
+        except urllib2.URLError as error:
             error_datetime = str(datetime.datetime.now().isoformat())
             with open(log_path, "a") as log_file:
-                log_json = {"datetime": error_datetime, "error": "First HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "response_code": response.code}
+                log_json = {"datetime": error_datetime, "error": "First URLError", "topic": msg.topic, "request_url": request_url, "error.reason": error.reason}
                 json.dump(log_json, log_file)
-            try:
-                response = urllib2.urlopen(request, timeout=10)
-            except:
-                error_datetime = str(datetime.datetime.now().isoformat())
-                with open(log_path, "a") as log_file:
-                    log_json = {"datetime": error_datetime, "error": "Second HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "response_code": response.code}
-                    json.dump(log_json, log_file)
-        #print response.code
+                log_file.write('\n')
+        except urllib2.HTTPError as error:
+            error_datetime = str(datetime.datetime.now().isoformat())
+            with open(log_path, "a") as log_file:
+                log_json = {"datetime": error_datetime, "error": "First HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "error.code": error.code}
+                json.dump(log_json, log_file)
+                log_file.write('\n')
+        else:
+            error_datetime = str(datetime.datetime.now().isoformat())
+            with open(log_path, "a") as log_file:
+                log_json = {"datetime": error_datetime, "error": "First UnknowError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str}
+                json.dump(log_json, log_file)
+                log_file.write('\n')
 
+        # print response.code

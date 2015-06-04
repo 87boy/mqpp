@@ -22,8 +22,8 @@ class GetConfig(object):
                 config_string = config_file.read()
                 self.config_json = json.loads(config_string)
         else:
-            log_path = cwd + "/config.log"
-            with open(log_path, "a") as log_file:
+            config_log_path = cwd + "/config.log"
+            with open(config_log_path, "a") as log_file:
                 log_json = {"datatime": str(datetime.datetime.now().isoformat()), "error": "config file does not exist!"}
                 json.dump(log_json, log_file)
 
