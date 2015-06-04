@@ -98,19 +98,19 @@ def on_message(client, userdata, msg):
         log_path = cwd + "/error.log"
         try:
             response = urllib2.urlopen(request, timeout=10)
-        except urllib2.URLError as error:
-            error_datetime = str(datetime.datetime.now().isoformat())
-            with open(log_path, "a") as log_file:
-                log_json = {"datetime": error_datetime, "error": "First URLError", "topic": msg.topic, "request_url": request_url, "error.reason": error.reason}
-                json.dump(log_json, log_file)
-                log_file.write('\n')
         except urllib2.HTTPError as error:
             error_datetime = str(datetime.datetime.now().isoformat())
             with open(log_path, "a") as log_file:
                 log_json = {"datetime": error_datetime, "error": "First HTTPError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str, "error.code": error.code}
                 json.dump(log_json, log_file)
                 log_file.write('\n')
-        else:
+        except urllib2.URLError as error:
+            error_datetime = str(datetime.datetime.now().isoformat())
+            with open(log_path, "a") as log_file:
+                log_json = {"datetime": error_datetime, "error": "First URLError", "topic": msg.topic, "request_url": request_url, "error.reason": error.reason}
+                json.dump(log_json, log_file)
+                log_file.write('\n')
+        except:
             error_datetime = str(datetime.datetime.now().isoformat())
             with open(log_path, "a") as log_file:
                 log_json = {"datetime": error_datetime, "error": "First UnknowError", "topic": msg.topic, "payload": msg.payload, "request_url": request_url, "post_str": post_str}

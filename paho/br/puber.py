@@ -31,7 +31,7 @@ def main():
     client.loop_start()
 
     message = {}
-    test_data = [{"device": "meter0", "timestamp": 1428928106555, "id": 3, "minimum": 111, "average": 222, "maximum": 333}, {"device": "meter0", "timestamp": 1428928106777, "id": 4, "minimum": 222, "average": 444, "maximum": 666}]
+    test_data = [{"device": "meter0", "timestamp": 1428928106556, "id": 3, "minimum": 111, "average": 222, "maximum": 333}, {"device": "meter0", "timestamp": 1428928106778, "id": 4, "minimum": 222, "average": 444, "maximum": 666}]
     message = test_data
     message_json = json.dumps(message)
     for key in topics.keys():
